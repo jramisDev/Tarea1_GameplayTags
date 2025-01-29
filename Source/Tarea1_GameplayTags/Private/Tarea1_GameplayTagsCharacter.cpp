@@ -69,7 +69,6 @@ void ATarea1_GameplayTagsCharacter::BeginPlay()
 			
 			if(Attr) CharacterAttributes = *Attr;
 		}
-
 	}
 }
 
