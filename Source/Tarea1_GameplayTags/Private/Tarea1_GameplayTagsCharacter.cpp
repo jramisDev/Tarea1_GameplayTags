@@ -76,6 +76,6 @@ void ATarea1_GameplayTagsCharacter::Attack()
 {
 	if(const TSubclassOf<UAttackBase> PrimaryAttack = CharacterAttributes->PrimaryAttack)
 	{
-		PrimaryAttack->GetDefaultObject<UAttackBase>()->TryAttack(GetOwner());
+		PrimaryAttack->GetDefaultObject<UAttackBase>()->Attack(GetOwner(), nullptr);
 	}
 }

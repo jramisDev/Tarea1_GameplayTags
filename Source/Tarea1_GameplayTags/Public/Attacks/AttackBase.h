@@ -4,11 +4,13 @@
 #include "UObject/Object.h"
 #include "AttackBase.generated.h"
 
+class APokemon;
+
 UCLASS()
 class TAREA1_GAMEPLAYTAGS_API UAttackBase : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	virtual bool TryAttack(AActor* AttackInstigator);
+	virtual void Attack(AActor* AttackInstigator, AActor* Target);
 };

@@ -1,6 +1,8 @@
 ﻿#include "Attacks/PokeAttack.h"
 
-bool UPokeAttack::TryAttack(AActor* AttackInstigator)
+#include "Engine/DamageEvents.h"
+
+bool UPokeAttack::InitializeAttackData()
 {
 	if(AttackData)
 	{
@@ -11,7 +13,7 @@ bool UPokeAttack::TryAttack(AActor* AttackInstigator)
 		{
 			FPokeAttackAttributes** Attr = OutData.FindByPredicate([this](FPokeAttackAttributes* Row)
 			{
-				return Row->ID.Compare(AttackId);
+				return Row->IdTag.MatchesTag(AttackIdTag);
 			});
 			
 			if(Attr)
@@ -22,4 +24,25 @@ bool UPokeAttack::TryAttack(AActor* AttackInstigator)
 		}
 	}
 	return false;
+}
+
+float UPokeAttack::ModifyDamageAttack(float Damage)
+{
+	return 0.0f;
+}
+
+void UPokeAttack::Attack(AActor* AttackInstigator, AActor* Target)
+{
+	Super::Attack(AttackInstigator, Target);
+
+	if(PPActual == 0) return;
+
+	ensureMsgf(AttackInstigator, TEXT("%s - AttackInstigator not defined"), ANSI_TO_TCHAR(__FUNCTION__));
+	ensureMsgf(Target, TEXT("%s - Target not defined"), ANSI_TO_TCHAR(__FUNCTION__));
+	ensureMsgf(InitializeAttackData(), TEXT("%s - Attack not defined"), ANSI_TO_TCHAR(__FUNCTION__));
+	
+	const FDamageEvent DamageEvent;
+	Target->TakeDamage(ModifyDamageAttack(PokeAttackAttributes->Damage), DamageEvent, AttackInstigator->GetInstigatorController(), AttackInstigator);
+	PPActual--;
+	
 }
