@@ -10,6 +10,11 @@ APokemon::APokemon()
 
 void APokemon::TryAttack()
 {
+	for ( auto Attack : AttackList)
+	{
+		
+	}
+	
 }
 
 void APokemon::BeginPlay()

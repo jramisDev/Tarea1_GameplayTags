@@ -2,7 +2,7 @@
 
 #include "Tarea1_GameplayTagsCharacter.h"
 
-#include "Attacks/AttackBase.h"
+#include "Tarea1/Attacks/AttackBase.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -76,6 +76,6 @@ void ATarea1_GameplayTagsCharacter::Attack()
 {
 	if(const TSubclassOf<UAttackBase> PrimaryAttack = CharacterAttributes->PrimaryAttack)
 	{
-		PrimaryAttack->GetDefaultObject<UAttackBase>()->Attack(GetOwner(), nullptr);
+		PrimaryAttack->GetDefaultObject<UAttackBase>()->Attack(GetOwner());
 	}
 }

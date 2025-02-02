@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
-#include "AttackBase.h"
 #include "GameplayTagContainer.h"
 #include "PokeAttack.generated.h"
 
@@ -16,9 +15,21 @@ public:
 	UPROPERTY(EditAnywhere)	FGameplayTag IdTag;
 	UPROPERTY(EditAnywhere)	FText Name;
 	UPROPERTY(EditAnywhere)	FText Description;
-	UPROPERTY(EditAnywhere)	FGameplayTag AttackTypeTag;
+	UPROPERTY(EditAnywhere)	TArray<FGameplayTag> AttackTypeTag;
 	UPROPERTY(EditAnywhere)	float Damage;
 	UPROPERTY(EditAnywhere)	int32 PP_Max;
+};
+
+USTRUCT(BlueprintType)
+struct FTypeEffectiveness : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTag Type; // Tipo de ataque
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FGameplayTag, float> Effectiveness; // Relación con otros tipos
 };
 
 UENUM(BlueprintType)
@@ -30,7 +41,7 @@ enum class EFDamageActor : uint8 {
 };
 
 UCLASS(BlueprintType, Blueprintable)
-class TAREA1_GAMEPLAYTAGS_API UPokeAttack : public UAttackBase
+class TAREA1_GAMEPLAYTAGS_API UPokeAttack : public UObject
 {
 	GENERATED_BODY()
 	
@@ -40,8 +51,11 @@ class TAREA1_GAMEPLAYTAGS_API UPokeAttack : public UAttackBase
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
 	UDataTable* AttackData;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
+	UDataTable* EffectivenessData;
+
 	bool InitializeAttackData();
-	float ModifyDamageAttack(float Damage);
+	float GetEffectiveness(TArray<FGameplayTag>& AttackType, TArray<FGameplayTag>& DefenseType) const;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
 	int32 PPActual;
@@ -51,5 +65,5 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon)
 	FGameplayTag AttackIdTag;
 
-	virtual void Attack(AActor* AttackInstigator, AActor* Target) override;
+	virtual void Attack(const TSubclassOf<UPokeAttack>& PokeAttack, APokemon& Target);
 };

@@ -5,3 +5,10 @@
 #include "CoreMinimal.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTarea1_GameplayTags, Log, All);
+
+class FTarea1_GameplayTags_Module : public IModuleInterface
+{
+public:
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
+};
