@@ -3,31 +3,7 @@
 #include "Tarea2/Pokemon.h"
 #include "Engine/DamageEvents.h"
 
-bool UPokeAttack::InitializeAttackData()
-{
-	if(AttackData)
-	{
-		TArray<FPokeAttackAttributes*> OutData;
-		AttackData->GetAllRows(TEXT(""), OutData);
-
-		if(!OutData.IsEmpty())
-		{
-			FPokeAttackAttributes** Attr = OutData.FindByPredicate([this](FPokeAttackAttributes* Row)
-			{
-				return Row->IdTag.MatchesTag(AttackIdTag);
-			});
-			
-			if(Attr)
-			{
-				PokeAttackAttributes = *Attr;
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-float UPokeAttack::GetEffectiveness(TArray<FGameplayTag>& AttackType, TArray<FGameplayTag>& DefenseType) const
+float UPokeAttack::GetEffectiveness(FGameplayTag& AttackType, FGameplayTag& DefenseType) const
 {
 	if (!EffectivenessData) return 1.0f; // Valor neutro si no hay tabla
 
