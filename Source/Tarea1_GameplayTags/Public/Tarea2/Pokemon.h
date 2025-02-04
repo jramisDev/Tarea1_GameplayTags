@@ -5,6 +5,8 @@
 #include "GameFramework/Character.h"
 #include "Pokemon.generated.h"
 
+class UPokeAttack;
+
 USTRUCT()
 struct FPokeAttackAttributes : public FTableRowBase
 {
@@ -14,7 +16,8 @@ public:
 	UPROPERTY(EditAnywhere)	FGameplayTag IdTag;
 	UPROPERTY(EditAnywhere)	FText Name;
 	UPROPERTY(EditAnywhere)	FText Description;
-	UPROPERTY(EditAnywhere)	FGameplayTag AttackTypeTag;
+	UPROPERTY(EditAnywhere)	FGameplayTag TypeTag;
+	UPROPERTY(EditAnywhere)	TSubclassOf<UPokeAttack> AttackClass;
 	UPROPERTY(EditAnywhere)	float Damage;
 	UPROPERTY(EditAnywhere)	int32 PP_Max;
 };
@@ -35,19 +38,23 @@ class TAREA1_GAMEPLAYTAGS_API APokemon : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
 	UDataTable* AttackData;
 	
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
-	TArray<FGameplayTag> AttackList;
+	void InitializeAttacksData();
 
-	bool InitializeAttackData();
 	
 
 public:
 	APokemon();
 
-	UPROPERTY(VisibleAnywhere, EditInstanceOnly, BlueprintReadWrite, Category = Pokemon)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pokemon, meta=(AllowPrivateAccess = true ))
+	TMap<UPokeAttack*, int32> AttacksSelected;	
+
+	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Pokemon)
 	APokemon* PokemonTarget;
 	
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = Pokemon)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon)
+	TArray<FGameplayTag> AttackList;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon)
 	FGameplayTag AttributeType;
 
 	UFUNCTION(BlueprintCallable)

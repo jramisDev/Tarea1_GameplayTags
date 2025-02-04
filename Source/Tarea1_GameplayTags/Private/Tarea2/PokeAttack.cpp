@@ -3,43 +3,48 @@
 #include "Tarea2/Pokemon.h"
 #include "Engine/DamageEvents.h"
 
-float UPokeAttack::GetEffectiveness(FGameplayTag& AttackType, FGameplayTag& DefenseType) const
+float UPokeAttack::GetEffectiveness(const FGameplayTag& InAttackType, const FGameplayTag& InDefenseType) const
 {
 	if (!EffectivenessData) return 1.0f; // Valor neutro si no hay tabla
 
-	// Lambda para buscar la efectividad entre un atacante y un defensor
-	auto FindEffectiveness = [&](const FGameplayTag& Attack, const FGameplayTag& Defense) -> float
-	{
-		FTypeEffectiveness* Row = EffectivenessData->FindRow<FTypeEffectiveness>(Attack.GetTagName(), TEXT(""));
-		return (Row && Row->Effectiveness.Contains(Defense)) ? Row->Effectiveness[Defense] : 1.0f;
-	};
+	return 1.0f;
 
-	float Effectiveness = 1.0f; // Empezamos con valor neutro
-
-	// Recorrer todos los tipos de ataque y defensa
-	for (const FGameplayTag& AttackType : AttackType)
-	{
-		for (const FGameplayTag& DefenseType : DefenseType)
-		{
-			Effectiveness *= FindEffectiveness(AttackType, DefenseType);
-		}
-	}
-
-	return Effectiveness;
+	// // Lambda para buscar la efectividad entre un atacante y un defensor
+	// auto FindEffectiveness = [&](const FGameplayTag& Attack, const FGameplayTag& Defense) -> float
+	// {
+	// 	FTypeEffectiveness* Row = EffectivenessData->FindRow<FTypeEffectiveness>(Attack.GetTagName(), TEXT(""));
+	// 	return (Row && Row->Effectiveness.Contains(Defense)) ? Row->Effectiveness[Defense] : 1.0f;
+	// };
+	//
+	// float Effectiveness = 1.0f; // Empezamos con valor neutro
+	//
+	// // Recorrer todos los tipos de ataque y defensa
+	// for (const FGameplayTag& AttackType : AttackType)
+	// {
+	// 	for (const FGameplayTag& DefenseType : DefenseType)
+	// 	{
+	// 		Effectiveness *= FindEffectiveness(AttackType, DefenseType);
+	// 	}
+	// }
+	//
+	// return Effectiveness;
 }
 
-void UPokeAttack::Attack(const TSubclassOf<UPokeAttack>& PokeAttack, APokemon& Target)
+void UPokeAttack::Init(const FPokeAttackAttributes& PokeAttackAttributes)
 {
-	if(PPActual == 0) return;
+	AttackType = PokeAttackAttributes.TypeTag;
+	AttackDamage = PokeAttackAttributes.Damage;
+	AttackPP = PokeAttackAttributes.PP_Max;
+}
 
-	ensureMsgf(PokeAttack, TEXT("%s - AttackInstigator not defined"), ANSI_TO_TCHAR(__FUNCTION__));
+void UPokeAttack::Attack(APokemon* Instigator, APokemon* Target)
+{
 	ensureMsgf(&Target, TEXT("%s - Target not defined"), ANSI_TO_TCHAR(__FUNCTION__));
-	ensureMsgf(InitializeAttackData(), TEXT("%s - Attack not defined"), ANSI_TO_TCHAR(__FUNCTION__));
 
-	const float Effectiveness = GetEffectiveness(PokeAttack.GetDefaultObject()->PokeAttackAttributes->AttackTypeTag, Target.AttributeType);
+	const float Effectiveness = GetEffectiveness(AttackType,Target->AttributeType);
+	
+	UE_LOG(LogTemp, Display, TEXT("%s realiza el Ataque %s a %s con daño %f y %d PP"), *Instigator->GetName(), *GetName(), *Target->GetName(), AttackDamage * Effectiveness, AttackPP);
 	
 	const FDamageEvent DamageEvent;
-	Target.TakeDamage(PokeAttack.GetDefaultObject()->PokeAttackAttributes->Damage * Effectiveness, DamageEvent, nullptr, nullptr);
-	PPActual--;
-	
+	Target->TakeDamage(AttackDamage * Effectiveness, DamageEvent, Instigator->GetController(), Instigator);
 }

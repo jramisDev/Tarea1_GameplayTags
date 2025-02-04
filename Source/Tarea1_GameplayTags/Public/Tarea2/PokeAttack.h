@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "Pokemon.h"
 #include "PokeAttack.generated.h"
 
 USTRUCT(BlueprintType)
@@ -16,14 +17,6 @@ struct FTypeEffectiveness : public FTableRowBase
 	TMap<FGameplayTag, float> Effectiveness; // Relación con otros tipos
 };
 
-UENUM(BlueprintType)
-enum class EFDamageActor : uint8 {
-	None = 0		UMETA(DisplayName = "NONE"),
-	Increase = 1	UMETA(DisplayName = "INCREASE"),
-	Decrease = 2    UMETA(DisplayName = "DECREASE"),
-	NotEffect = 3	UMETA(DisplayName = "NOT EFFECT"),
-};
-
 struct FPokeAttackAttributes;
 class APokemon;
 class UPokeAttack;
@@ -33,21 +26,26 @@ class TAREA1_GAMEPLAYTAGS_API UPokeAttack : public UObject
 {
 	GENERATED_BODY()
 	
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(AllowPrivateAccess = true ))
-	FPokeAttackAttributes* PokeAttackAttributes;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
+	FGameplayTag AttackType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
+	float AttackDamage;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
+	int32 AttackPP;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
 	UDataTable* EffectivenessData;
 	
-	float GetEffectiveness(FGameplayTag& AttackType, FGameplayTag& DefenseType) const;
-	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
-	int32 PPActual;
+	float GetEffectiveness(const FGameplayTag& AttackType, const FGameplayTag& DefenseType) const;
 	
 public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon)
 	FGameplayTag AttackIdTag;
 
-	virtual void Attack(const TSubclassOf<UPokeAttack>& PokeAttack, APokemon& Target);
+	virtual void Init(const FPokeAttackAttributes& PokeAttackAttributes);
+
+	virtual void Attack(APokemon* Instigator, APokemon* Target);
 };
