@@ -11,7 +11,7 @@ struct FTypeEffectiveness : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTag Type; // Tipo de ataque
+	FGameplayTag TypeTag; // Tipo de ataque
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FGameplayTag, float> Effectiveness; // Relación con otros tipos
@@ -26,19 +26,21 @@ class TAREA1_GAMEPLAYTAGS_API UPokeAttack : public UObject
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
+	UPROPERTY(BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
 	FGameplayTag AttackType;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
+	UPROPERTY(BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
 	float AttackDamage;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
+	UPROPERTY(BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
 	int32 AttackPP;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Pokemon, meta=(AllowPrivateAccess = true ))
 	UDataTable* EffectivenessData;
 	
-	float GetEffectiveness(const FGameplayTag& AttackType, const FGameplayTag& DefenseType) const;
+	FTypeEffectiveness* AttackEffectiveness;
+
+	float GetEffectiveness(const FGameplayTag& DefenseType);
 	
 public:
 	

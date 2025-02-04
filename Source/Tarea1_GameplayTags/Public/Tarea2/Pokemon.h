@@ -40,8 +40,6 @@ class TAREA1_GAMEPLAYTAGS_API APokemon : public ACharacter
 	
 	void InitializeAttacksData();
 
-	
-
 public:
 	APokemon();
 
