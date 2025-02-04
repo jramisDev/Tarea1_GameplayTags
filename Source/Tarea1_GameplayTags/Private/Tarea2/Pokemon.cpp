@@ -6,7 +6,7 @@ APokemon::APokemon()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	AttackList.SetNum(4);
+	//AttackList.SetNum(4);
 }
 
 void APokemon::InitializeAttacksData()
@@ -52,14 +52,12 @@ void APokemon::InitializeAttacksData()
 	}
 }
 
-void APokemon::TryAttack()
+bool APokemon::TryAttack(UPokeAttack* AttackExecute)
 {
-	if(!PokemonTarget) return;
+	if(!PokemonTarget) return false;
 	
-	for (const auto ExecuteAttack : AttacksSelected)
-	{
-		ExecuteAttack.Key->Attack(this, PokemonTarget);
-	}
+	AttackExecute->Attack(this, PokemonTarget);
+	return true;
 }
 
 void APokemon::BeginPlay()
@@ -67,6 +65,23 @@ void APokemon::BeginPlay()
 	Super::BeginPlay();
 	
 	//checkf(AttackList.Num() > NumAttacks, TEXT("%s - NO PODEMOS TENER MÁS DE CUATRO ATAQUES"), *FString(__FUNCTION__));
+	
 	InitializeAttacksData();
-	TryAttack();
+
+	//Por no trastear más, los lanzo de una manera sencilla
+	if(AttackList.Num() > 0)
+	{
+		for (auto It = AttacksSelected.CreateIterator(); It; ++It)
+		{
+			UPokeAttack* AttackClass = It.Key();
+			int32& AttackActualPP = It.Value();
+		
+			if(AttackActualPP == 0) continue;
+		
+			if(TryAttack(AttackClass))
+			{
+				AttackActualPP--;			
+			}
+		}
+	}
 }

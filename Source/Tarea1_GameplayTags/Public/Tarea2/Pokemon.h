@@ -56,7 +56,7 @@ public:
 	FGameplayTag AttributeType;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void TryAttack();
+	virtual bool TryAttack(UPokeAttack* AttackExecute);
 
 protected:
 	virtual void BeginPlay() override;

@@ -21,12 +21,12 @@ float UPokeAttack::GetEffectiveness(const FGameplayTag& InDefenseType)
 			
 		if(Attr) AttackEffectiveness = *Attr;
 	}
-
-	for(auto MultiplayEffectiveness : AttackEffectiveness->Effectiveness)
+	
+	if(AttackEffectiveness)
 	{
-		if(MultiplayEffectiveness.Key.MatchesTag(InDefenseType))
+		for (const TPair<FGameplayTag, float>& AttackEffective : AttackEffectiveness->Effectiveness)
 		{
-			return MultiplayEffectiveness.Value;
+			if(AttackEffective.Key.MatchesTag(InDefenseType)) return AttackEffective.Value;
 		}
 	}
 	
@@ -44,8 +44,6 @@ void UPokeAttack::Attack(APokemon* Instigator, APokemon* Target)
 {
 	ensureMsgf(&Target, TEXT("%s - Target not defined"), ANSI_TO_TCHAR(__FUNCTION__));
 
-	if(AttackPP == 0) return;
-
 	const float Effectiveness = GetEffectiveness(Target->AttributeType);
 	
 	UE_LOG(LogTemp, Display, TEXT("%s realiza el Ataque %s (daño %f) tipo %s a %s tipo %s con daño %f (multiplicador %f) y %d PP"),
@@ -61,5 +59,4 @@ void UPokeAttack::Attack(APokemon* Instigator, APokemon* Target)
 	
 	const FDamageEvent DamageEvent;
 	Target->TakeDamage(AttackDamage * Effectiveness, DamageEvent, Instigator->GetController(), Instigator);
-	AttackPP--;
 }
